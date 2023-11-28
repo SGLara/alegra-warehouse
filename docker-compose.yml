@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  #Nginx Service
+  alegra-ingredient-server:
+    image: nginx:alpine
+    container_name: alegra-ingredient-server
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "82:80"
+    networks:
+      - alegra-network
+    volumes:
+      - ./:/var/www/html/
+    depends_on:
+      - alegra-ingredient
+      - alegra-ingredient-db
+
+  #MySQL Service
+  alegra-ingredient-db:
+    image: mysql:latest
+    container_name: alegra-ingredient-db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: alegra-ingredient-db
+      MYSQL_ROOT_PASSWORD: alegraDB
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - alegra-network
+    volumes:
+      - alegra-db:/var/lib/mysql/
+
+  #PHP Service
+  alegra-ingredient:
+    build:
+      context: .
+    image: php:8.1-fpm
+    container_name: alegra-ingredient
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www/html/
+    ports:
+      - "9001:9000"
+    networks:
+      - alegra-network
+    volumes:
+      - ./:/var/www/html/
+
+  # Netshoot Service
+  netshoot:
+    image: nicolaka/netshoot
+    container_name: netshoot-ingredient-service
+    restart: unless-stopped
+    tty: true
+    networks:
+      - alegra-network
+
+#Docker Networks
+networks:
+  alegra-network:
+    driver: bridge
+
+#Volumes
+volumes:
+  alegra-db:
+    driver: local
