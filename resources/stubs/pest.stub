@@ -1,0 +1,8 @@
+<?php
+// phpcs:ignoreFile
+
+use function Pest\Laravel\actingAs;
+
+it('example', function () {
+    //
+});
