@@ -13,36 +13,38 @@ class IngredientService
     ) {
     }
 
-    public function buyMissingIngredients(Collection $missingIngredients): Collection
+    public function buyMissingIngredients(Collection $missingIngredients, array $availableIngredients): Collection
     {
         $boughtIngredients = collect();
 
-        $missingIngredients->each(function (int $requiredAmount, string $name) use (&$boughtIngredients) {
-            $currentAmount = 0;
+        $missingIngredients->each(
+            function (int $requiredAmount, string $name) use (&$boughtIngredients, $availableIngredients) {
+                $currentAmount = $availableIngredients[$name] ?? 0;
 
-            // Buy ingredients until the required amount is met
-            while ($currentAmount < $requiredAmount) {
-                $unitsBought = $this->marketApiService
-                    ->buyIngredient($name)
-                    ->get('quantitySold');
-
-                // Retry until a non-zero value is returned
-                while ($unitsBought === 0) {
+                // Buy ingredients until the required amount is met
+                while ($currentAmount < $requiredAmount) {
                     $unitsBought = $this->marketApiService
                         ->buyIngredient($name)
                         ->get('quantitySold');
+
+                    // Retry until a non-zero value is returned
+                    while ($unitsBought === 0) {
+                        $unitsBought = $this->marketApiService
+                            ->buyIngredient($name)
+                            ->get('quantitySold');
+                    }
+
+                    $currentAmount += $unitsBought;
+
+                    PurchaseIngredientHistory::create([
+                        'name' => $name,
+                        'quantity' => $unitsBought,
+                    ]);
+
+                    $boughtIngredients->put($name, $currentAmount);
                 }
-
-                $currentAmount += $unitsBought;
-
-                PurchaseIngredientHistory::create([
-                    'name' => $name,
-                    'quantity' => $unitsBought,
-                ]);
-
-                $boughtIngredients->put($name, $currentAmount);
             }
-        });
+        );
 
         return $boughtIngredients;
     }

@@ -35,7 +35,10 @@ class IngredientController extends Controller
             }
 
             // Buy missing ingredients and update available units
-            $boughtIngredients = $this->ingredientService->buyMissingIngredients($missingIngredients);
+            $boughtIngredients = $this->ingredientService->buyMissingIngredients(
+                $missingIngredients,
+                $availableIngredientsArray
+            );
             $this->ingredientService->updateAvailableUnits($boughtIngredients, '+');
         }
 
