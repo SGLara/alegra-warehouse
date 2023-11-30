@@ -3,4 +3,10 @@
 use App\Http\Controllers\IngredientController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('ingredients', [IngredientController::class, 'index']);
+Route::group([
+    'controller' => IngredientController::class,
+    'prefix' => 'ingredients',
+], function () {
+    Route::get('/', 'index');
+    Route::patch('/', 'update');
+});
