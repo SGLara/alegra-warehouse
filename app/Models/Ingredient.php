@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -41,10 +42,11 @@ class Ingredient extends Model
     | Attributes
     |--------------------------------------------------------------------------
     */
-    // /** @return Attribute<string, string> */ Getter and setter
-    // /** @return Attribute<string, never> */ Only getter
-    // /** @return Attribute<never, string> */ Only setter
-    // protected function fullName(): Attribute
+    /** @return Attribute<never, int> */
+    public function availableUnits(): Attribute
+    {
+        return Attribute::set(fn (int $value) => $value < 0 ? 0 : $value);
+    }
 
     /*
     |--------------------------------------------------------------------------

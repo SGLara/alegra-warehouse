@@ -28,6 +28,10 @@ class IngredientController extends Controller
                     $availableAmount = $availableIngredientsArray[$name];
 
                     return $amount > $availableAmount;
+                })->map(function ($amount, $name) use ($availableIngredientsArray) {
+                    $availableAmount = $availableIngredientsArray[$name];
+
+                    return $amount - $availableAmount;
                 });
 
             if ($missingIngredients->isEmpty()) {

@@ -18,8 +18,8 @@ class IngredientService
         $boughtIngredients = collect();
 
         $missingIngredients->each(
-            function (int $requiredAmount, string $name) use (&$boughtIngredients, $availableIngredients) {
-                $currentAmount = $availableIngredients[$name] ?? 0;
+            function (int $requiredAmount, string $name) use (&$boughtIngredients) {
+                $currentAmount = 0;
 
                 // Buy ingredients until the required amount is met
                 while ($currentAmount < $requiredAmount) {
