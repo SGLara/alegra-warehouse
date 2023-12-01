@@ -56,7 +56,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
-
+    'redirect_https' => env('REDIRECT_HTTPS', false),
     'asset_url' => env('ASSET_URL'),
 
     /*
